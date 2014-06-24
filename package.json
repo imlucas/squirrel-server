@@ -1,7 +1,7 @@
 {
   "name": "squirrel-server",
   "description": "server-side for the Squirrel updater framework",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "author": "Lucas Hrabovsky <hrabovsky.lucas@gmail.com> (http://imlucas.com)",
   "license": "MIT",
   "homepage": "http://github.com/imlucas/squirrel-server",
