@@ -1,0 +1,29 @@
+{
+  "name": "squirrel-server",
+  "description": "server-side for the Squirrel updater framework",
+  "version": "0.0.0",
+  "author": "Lucas Hrabovsky <hrabovsky.lucas@gmail.com> (http://imlucas.com)",
+  "license": "MIT",
+  "homepage": "http://github.com/imlucas/squirrel-server",
+  "bin": {
+    "squirrel-server": "bin/squirrel-server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/imlucas/squirrel-server.git"
+  },
+  "scripts": {
+    "start": "index.js",
+    "test": "mocha"
+  },
+  "dependencies": {
+    "express": "^4.4.4",
+    "nconf": "^0.6.9",
+    "semver": "^2.3.1",
+    "untildify": "^0.1.0"
+  },
+  "devDependencies": {
+    "mocha": "^1.20.1",
+    "supertest": "^0.13.0"
+  }
+}
