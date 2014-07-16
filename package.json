@@ -13,14 +13,16 @@
     "url": "git://github.com/imlucas/squirrel-server.git"
   },
   "scripts": {
-    "start": "index.js",
+    "start": "node bin/squirrel-server.js",
     "test": "mocha"
   },
   "dependencies": {
     "express": "^4.4.4",
+    "github-release": "0.0.2",
+    "jade": "^1.4.0",
     "nconf": "^0.6.9",
-    "semver": "^2.3.1",
-    "untildify": "^0.1.0"
+    "request": "^2.37.0",
+    "semver": "^2.3.1"
   },
   "devDependencies": {
     "mocha": "^1.20.1",

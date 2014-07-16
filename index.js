@@ -1,28 +1,81 @@
 var express = require('express'),
   app = module.exports = express(),
   semver = require('semver'),
-  fs = require('fs'),
-  path = require('path'),
   nconf = require('nconf'),
-  untildify = require('untildify');
+  App = require('./models'),
+  request = require('request');
 
 nconf.argv().env().use('memory').defaults({
-  port: 8080,
-  releases: '~/squirrel-releases.json'
+  port: 8080
 });
 
-app.get('/releases/latest', function(req, res, next){
-  fs.readFile(path.resolve(untildify(nconf.get('releases'))), 'utf-8', function(err, data){
+var apps = {
+  'mongoscope-ci': {
+    repo: 'imlucas/mongoscope-ci',
+    filename: function(req){
+      return new RegExp('mongoscope-ci_' + req.param('os', 'osx'));
+    }
+  }
+};
+
+app.set('views', __dirname + '/views');
+app.set('view engine', require('jade').__express);
+
+app.param('app', function(req, res, next, name){
+  req.locals = {
+    app: App.get(name, apps[name].repo),
+    filename: apps[name].filename
+  };
+  next();
+});
+
+app.param('v', function(req, res, next, v){
+  req.locals.app.version(v, function(err, release){
     if(err) return next(err);
 
-    var releases = JSON.parse(data), latest;
-    releases.sort(function(a, b){
-      return semver.compare(a.version, b.version);
-    });
+    req.locals.release = release;
+    next();
+  });
+});
 
-    latest = releases[0];
+app.get('/:app/install', function(req, res, next){
+  app.render('install.jade', {
+    app: req.locals.app,
+    url: 'http://' + req.headers.host
+  }, function(err, text){
+    if(err) return next(err);
+    res.set('Content-Type', 'text/plain');
+    res.send(text);
+  });
+});
 
-    if(semver.lt(req.param('version'), latest.version)) return res.send(200, latest);
+app.get('/:app/releases/:v', function(req, res){
+  res.send(req.locals.release);
+});
+
+app.get('/:app/releases/:v/download', function(req, res){
+  var wanted = req.locals.filename(req);
+  var asset = req.locals.release.assets.filter(function(asset){
+    return wanted.test(asset.name);
+  })[0];
+
+  if(!asset){
+    console.log('No asset named ', wanted, 'in the release');
+    return res.send(404);
+  }
+
+  request(asset.browser_download_url, {qs: {access_token: process.env.GITHUB_TOKEN}, headers: {
+      'User-Agent': '@imlucas/github-release uploader'
+    }}).pipe(res);
+});
+
+app.get('/:app/releases/latest', function(req, res, next){
+  req.locals.app.latest(function(err, latest){
+    if(err) return next(err);
+
+    if(semver.lt(req.param('version'), latest.version)){
+      return res.send(200, latest);
+    }
 
     res.send(204);
   });

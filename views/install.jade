@@ -1,0 +1,110 @@
+| #!/bin/sh
+| version="latest"
+| arch=`uname -m`
+| os=`uname -s`
+| url="#{url}/#{app.name}/releases/${version}/download?os=${os}&arch=${arch}"
+| url=`echo $url | tr '[A-Z]' '[a-z]'`
+| filename='#{app.name}'
+| # From the chef omnibus installer:
+| #     https://www.opscode.com/chef/install.sh
+| #
+| # WARNING: REQUIRES /bin/sh
+| #
+| # - must run on /bin/sh on solaris 9
+| # - must run on /bin/sh on AIX 6.x
+| # - if you think you are a bash wizard, you probably do not understand
+| #   this programming language.  do not touch.
+| # - if you are under 40, get peer review from your elders.
+| #
+| # Author:: Tyler Cloke (tyler@opscode.com)
+| # Author:: Stephen Delano (stephen@opscode.com)
+| # Author:: Seth Chisamore (sethc@opscode.com)
+| # Author:: Lamont Granquist (lamont@opscode.com)
+| # Copyright:: Copyright (c) 2010-2013 Chef Software, Inc.
+| # License:: Apache License, Version 2.0
+| #
+| # Licensed under the Apache License, Version 2.0 (the "License");
+| # you may not use this file except in compliance with the License.
+| # You may obtain a copy of the License at
+| #
+| #     http://www.apache.org/licenses/LICENSE-2.0
+| #
+| # Unless required by applicable law or agreed to in writing, software
+| # distributed under the License is distributed on an "AS IS" BASIS,
+| # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+| # See the License for the specific language governing permissions and
+| # limitations under the License.
+| #
+| # Check whether a command exists - returns 0 if it does, 1 if it does not
+| exists() {
+|   if command -v $1 >/dev/null 2>&1
+|   then
+|     return 0
+|   else
+|     return 1
+|   fi
+| }
+| unable_to_retrieve_package() {
+|   echo "Unable to retrieve a valid executable!"
+|   echo "URL: $url"
+|   if test "x$stderr_results" != "x"; then
+|     echo "\nDEBUG OUTPUT FOLLOWS:\n$stderr_results"
+|   fi
+|   exit 1
+| }
+| capture_tmp_stderr() {
+|   # spool up /tmp/stderr from all the commands we called
+|   if test -f "/tmp/stderr"; then
+|     output=`cat /tmp/stderr`
+|     stderr_results="${stderr_results}\nSTDERR from $1:\n\n$output\n"
+|     rm /tmp/stderr
+|   fi
+| }
+| # do_wget URL FILENAME
+| do_wget() {
+|   echo "trying wget..."
+|   wget -O "$2" "$1" 2>/tmp/stderr
+|   rc=$?
+|   # check for 404
+|   grep "ERROR 404" /tmp/stderr 2>&1 >/dev/null
+|   if test $? -eq 0; then
+|     echo "ERROR 404"
+|     unable_to_retrieve_package
+|   fi
+|   # check for bad return status or empty output
+|   if test $rc -ne 0 || test ! -s "$2"; then
+|     capture_tmp_stderr "wget"
+|     return 1
+|   fi
+|   return 0
+| }
+| # do_curl URL FILENAME
+| do_curl() {
+|   echo "trying curl..."
+|   curl -sL -D /tmp/stderr "$1" > "$2"
+|   rc=$?
+|   # check for 404
+|   grep "404 Not Found" /tmp/stderr 2>&1 >/dev/null
+|   if test $? -eq 0; then
+|     echo "ERROR 404"
+|     unable_to_retrieve_package
+|   fi
+|   # check for bad return status or empty output
+|   if test $rc -ne 0 || test ! -s "$2"; then
+|     capture_tmp_stderr "curl"
+|     return 1
+|   fi
+|   return 0
+| }
+| do_download() {
+|   if exists wget; then
+|     do_wget $1 $2 && return 0
+|   fi
+|   if exists curl; then
+|     do_curl $1 $2 && return 0
+|   fi
+|   unable_to_retrieve_package
+| }
+| do_download "$url" "$filename"
+| chmod +x "$filename"
+| exec "$filename"
