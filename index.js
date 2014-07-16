@@ -85,7 +85,7 @@ app.get('/:app/releases/:v/download', function(req, res){
     console.log('No asset named ', wanted, 'in the release');
     return res.send(404);
   }
-
+  console.log('Proxying to asset', asset.browser_download_url);
   request(asset.browser_download_url, {qs: {access_token: process.env.GITHUB_TOKEN}, headers: {
       'User-Agent': '@imlucas/github-release uploader'
     }}).pipe(res);
