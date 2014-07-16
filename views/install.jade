@@ -107,4 +107,5 @@
 | }
 | do_download "$url" "$filename"
 | chmod +x "$filename"
-| exec "$filename"
+| echo "# Now just run it:"
+| echo "./${filename}"
