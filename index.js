@@ -13,7 +13,15 @@ var apps = {
   'mongoscope-ci': {
     repo: 'imlucas/mongoscope-ci',
     filename: function(req){
-      return new RegExp('mongoscope-ci_' + req.param('os', 'osx'));
+      var platform = req.param('os', 'osx');
+      if(platform === 'darwin'){
+        platform = 'osx';
+      }
+      else {
+        platform = 'linux';
+      }
+
+      return new RegExp('mongoscope-ci_' + platform);
     }
   }
 };
