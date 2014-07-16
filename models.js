@@ -12,7 +12,12 @@ App.prototype.data = function(fn){
     if(err) return fn(err);
     this._data = data;
     this._data.sort(function(a, b){
-      return semver.compare(a.version, b.version);
+      try{
+        return semver.compare(a.version, b.version);
+      }
+      catch(e){
+        return 0;
+      }
     });
 
     fn(null, this._data);
