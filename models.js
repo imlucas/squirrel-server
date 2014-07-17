@@ -10,16 +10,13 @@ function App(name, repo){
 App.prototype.data = function(fn){
   gh.list(process.env.GITHUB_TOKEN, this.repo, function(err, data){
     if(err) return fn(err);
-    this._data = data;
-    this._data.sort(function(a, b){
-      try{
-        return semver.compare(a.version, b.version);
-      }
-      catch(e){
-        return 0;
-      }
+    this._data = data.map(function(release){
+      release.version = release.tag_name;
+      return release;
     });
-
+    this._data.sort(function(a, b){
+      return semver.compare(a.version, b.version);
+    });
     fn(null, this._data);
   });
 };

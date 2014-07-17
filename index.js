@@ -72,7 +72,13 @@ app.get('/:app/install', function(req, res, next){
 });
 
 app.get('/:app/releases/:v', function(req, res){
-  res.send(req.locals.release);
+  if(!req.param('version')) return res.send(req.locals.release);
+
+  var want = req.param('version'),
+    latest = req.locals.release,
+    update = want === '0.0.0' || semver.lt(want, latest.version);
+
+  return (update) ? res.send(200, latest) : res.send(204);
 });
 
 app.get('/:app/releases/:v/download', function(req, res){
@@ -85,21 +91,5 @@ app.get('/:app/releases/:v/download', function(req, res){
     console.log('No asset named ', wanted, 'in the release');
     return res.send(404);
   }
-  console.log('Proxying to asset', asset.browser_download_url);
-  // @todo: doesnt work for private repos. :(
-  request(asset.browser_download_url, {headers: {
-      'User-Agent': '@imlucas/github-release uploader'
-    }}).pipe(res);
-});
-
-app.get('/:app/releases/latest', function(req, res, next){
-  req.locals.app.latest(function(err, latest){
-    if(err) return next(err);
-
-    if(semver.lt(req.param('version'), latest.version)){
-      return res.send(200, latest);
-    }
-
-    res.send(204);
-  });
+  res.redirect(asset.browser_download_url);
 });

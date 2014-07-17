@@ -14,7 +14,7 @@ describe('Squirrel', function(){
   it('should not send an update if we already have the latest', function(done){
     request(app)
       .get('/mongoscope-ci/releases/latest')
-      .query({version: '0.0.1'})
+      .query({version: '100.0.1'})
       .expect(204)
       .end(done);
   });
