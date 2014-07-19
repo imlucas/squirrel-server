@@ -107,6 +107,9 @@
 | }
 | do_download "$url" "$filename"
 | chmod +x "$filename"
-| echo "# #{app.name} is ready to use! Just run it like so:"
-| echo ""
-| echo "./${filename}"
+if go
+  | ./${filename}
+else
+  | echo "# #{app.name} is ready to use! Just run it like so:"
+  | echo ""
+  | echo "./${filename}"

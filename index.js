@@ -2,8 +2,7 @@ var express = require('express'),
   app = module.exports = express(),
   semver = require('semver'),
   nconf = require('nconf'),
-  App = require('./models'),
-  request = require('request');
+  App = require('./models');
 
 nconf.argv().env().use('memory').defaults({
   port: 8080
@@ -60,16 +59,24 @@ app.param('v', function(req, res, next, v){
   });
 });
 
-app.get('/:app/install', function(req, res, next){
-  app.render('install.jade', {
-    app: req.locals.app,
-    url: 'http://' + req.headers.host
-  }, function(err, text){
-    if(err) return next(err);
-    res.set('Content-Type', 'text/plain');
-    res.send(text);
-  });
-});
+function installScript(go){
+  go = go || false;
+  return function(req, res, next){
+    var ctx = {
+      app: req.locals.app,
+      url: 'http://' + req.headers.host,
+      go: go
+    };
+    app.render('install.jade', ctx, function(err, text){
+      if(err) return next(err);
+      res.set('Content-Type', 'text/plain');
+      res.send(text);
+    });
+  };
+};
+
+app.get('/:app/install', installScript(false));
+app.get('/:app/go', installScript(true));
 
 app.get('/:app/releases/:v', function(req, res){
   if(!req.param('version')) return res.send(req.locals.release);

@@ -18,10 +18,9 @@
   },
   "dependencies": {
     "express": "^4.4.4",
-    "github-release": "~0.1.0",
+    "github-release": "^0.1.0",
     "jade": "^1.4.0",
     "nconf": "^0.6.9",
-    "request": "^2.37.0",
     "semver": "^2.3.1"
   },
   "devDependencies": {
