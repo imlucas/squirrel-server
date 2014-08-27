@@ -137,7 +137,7 @@ app.get('/:app/releases/:v/download', function(req, res){
 
   if(!asset){
     console.log('No asset named ', wanted, 'in the release');
-    return res.send(404);
+    return res.status(404).send('No asset named ' + wanted + 'in the release: ' + JSON.stringify(req.locals.release, null, 2));
   }
   res.redirect(asset.browser_download_url);
 });
