@@ -47,7 +47,7 @@ var apps = {
       else {
         platform = 'linux';
       }
-      return new RegExp('mongodb-dyno_' + platform);
+      return new RegExp('mongodb-dyno*');
     }
   },
 
