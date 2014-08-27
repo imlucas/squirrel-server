@@ -23,6 +23,47 @@ var apps = {
       return new RegExp('mongoscope-ci_' + platform);
     }
   },
+  'mongodb-bridge': {
+    repo: 'imlucas/mongodb-bridge',
+    filename: function(req){
+      var platform = req.param('os', 'osx');
+      if(platform === 'darwin'){
+        platform = 'osx';
+      }
+      else {
+        platform = 'linux';
+      }
+
+      return new RegExp('mongodb-bridge_' + platform);
+    }
+  },
+  'mongodb-dyno': {
+    repo: 'imlucas/mongodb-bridge',
+    filename: function(req){
+      var platform = req.param('os', 'osx');
+      if(platform === 'darwin'){
+        platform = 'osx';
+      }
+      else {
+        platform = 'linux';
+      }
+      return new RegExp('mongodb-dyno_' + platform);
+    }
+  },
+
+  'mongodb-runner': {
+    repo: 'imlucas/mongodb-runner',
+    filename: function(req){
+      var platform = req.param('os', 'osx');
+      if(platform === 'darwin'){
+        platform = 'osx';
+      }
+      else {
+        platform = 'linux';
+      }
+      return new RegExp('mongodb-runner_' + platform);
+    }
+  },
   'mongoscope': {
     repo: '10gen/mongoscope',
     filename: function(req){
@@ -73,7 +114,7 @@ function installScript(go){
       res.send(text);
     });
   };
-};
+}
 
 app.get('/:app/install', installScript(false));
 app.get('/:app/go', installScript(true));
