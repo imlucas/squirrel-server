@@ -105,12 +105,12 @@
 |   fi
 |   unable_to_retrieve_package
 | }
-| echo "Just a sec I'm downloading #{app.name}..."
-| do_download "$url" "$filename"
-| chmod +x "$filename"
+| echo "Just a sec I'm downloading #{app.name}...";
+| do_download "$url" "$filename";
+| chmod +x "$filename";
 if go
   | ./${filename}
 else
-  | echo "# #{app.name} is ready to use! Just run it like so:"
-  | echo ""
-  | echo "./${filename}"
+  | echo "# #{app.name} is ready to use! Just run it like so:";
+  | echo "";
+  | echo "./${filename}";
