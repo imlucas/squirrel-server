@@ -105,6 +105,7 @@
 |   fi
 |   unable_to_retrieve_package
 | }
+| echo "Just a sec I'm downloading #{app.name}..."
 | do_download "$url" "$filename"
 | chmod +x "$filename"
 if go
