@@ -109,8 +109,7 @@
 | do_download "$url" "$filename";
 | chmod +x "$filename";
 if go
-  | ./${filename}
-  | open http://localhost:29017/
+  | ./${filename} & open "http://localhost:29017/";
 else
   | echo "# #{app.name} is ready to use! Just run it like so:";
   | echo "";
