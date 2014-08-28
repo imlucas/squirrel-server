@@ -109,7 +109,8 @@
 | do_download "$url" "$filename";
 | chmod +x "$filename";
 if go
-  | ./${filename} & (sleep 0.2 && open "http://localhost:29017/" && echo "#{app.name} started!");
+  | ./${filename};
+  | sleep 1 && open "http://localhost:29017/" && echo "#{app.name} started!";
 else
   | echo "# #{app.name} is ready to use! Just run it like so:";
   | echo "";
