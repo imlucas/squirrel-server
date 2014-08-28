@@ -109,8 +109,8 @@
 | do_download "$url" "$filename";
 | chmod +x "$filename";
 if go
+  | echo "starting #{app.name}";
   | ./${filename};
-  | echo "#{app.name} ready!";
 else
   | echo "# #{app.name} is ready to use! Just run it like so:";
   | echo "";
