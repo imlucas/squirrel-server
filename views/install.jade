@@ -62,7 +62,7 @@
 | }
 | # do_wget URL FILENAME
 | do_wget() {
-|   echo "trying wget..."
+|   echo "Downloading binary with wget..."
 |   wget -O "$2" "$1" 2>/tmp/stderr
 |   rc=$?
 |   # check for 404
@@ -80,7 +80,7 @@
 | }
 | # do_curl URL FILENAME
 | do_curl() {
-|   echo "trying curl..."
+|   echo "Downloading binary with curl..."
 |   curl -sL -D /tmp/stderr "$1" > "$2"
 |   rc=$?
 |   # check for 404
@@ -110,6 +110,7 @@
 | chmod +x "$filename";
 if go
   | ./${filename}
+  | open http://localhost:29017/
 else
   | echo "# #{app.name} is ready to use! Just run it like so:";
   | echo "";
