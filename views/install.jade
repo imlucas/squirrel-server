@@ -109,9 +109,8 @@
 | do_download "$url" "$filename";
 | chmod +x "$filename";
 if go
-  | killall ${filename} || true;
   | ./${filename};
-  | sleep 1 && open "http://localhost:29017/" && echo "#{app.name} started!";
+  | echo "#{app.name} ready!";
 else
   | echo "# #{app.name} is ready to use! Just run it like so:";
   | echo "";
