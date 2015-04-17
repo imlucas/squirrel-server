@@ -1,0 +1,6 @@
+{
+  "name": "squirrel.mongodb.parts",
+  "description": "Server for using Squirrel autoupdates.",
+  "repository": "https://github.com/mongodb-js/squirrel-server",
+  "keywords": ["mongodb", "mongodb.js"]
+}

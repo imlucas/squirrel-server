@@ -8,74 +8,48 @@ nconf.argv().env().use('memory').defaults({
   port: 8080
 });
 
+app.use(function(req, res, next){
+  var platform = req.param('os', 'osx');
+  if(platform === 'darwin') platform = 'osx';
+  req.platform = platform;
+  next();
+});
+
 var apps = {
   'mongoscope-ci': {
     repo: 'imlucas/mongoscope-ci',
     filename: function(req){
-      var platform = req.param('os', 'osx');
-      if(platform === 'darwin'){
-        platform = 'osx';
-      }
-      else {
-        platform = 'linux';
-      }
-
-      return new RegExp('mongoscope-ci_' + platform);
+      return new RegExp('mongoscope-ci_' + req.platform);
     }
   },
   'mongodb-bridge': {
     repo: 'imlucas/mongodb-bridge',
     filename: function(req){
-      var platform = req.param('os', 'osx');
-      if(platform === 'darwin'){
-        platform = 'osx';
-      }
-      else {
-        platform = 'linux';
-      }
-
-      return new RegExp('mongodb-bridge_' + platform);
+      return new RegExp('mongodb-bridge_' + req.platform);
     }
   },
   'mongodb-dyno': {
-    repo: 'imlucas/mongodb-bridge',
+    repo: 'imlucas/mongodb-dyno',
     filename: function(req){
-      var platform = req.param('os', 'osx');
-      if(platform === 'darwin'){
-        platform = 'osx';
-      }
-      else {
-        platform = 'linux';
-      }
-      return new RegExp('mongodb-dyno*');
+      return new RegExp('mongodb-dyno_' + req.platform);
     }
   },
-
+  'mongodb-dyno-runner': {
+    repo: 'imlucas/mongodb-dyno',
+    filename: function(req){
+      return new RegExp('mongodb-dyno-runner_' + req.platform);
+    }
+  },
   'mongodb-runner': {
     repo: 'imlucas/mongodb-runner',
     filename: function(req){
-      var platform = req.param('os', 'osx');
-      if(platform === 'darwin'){
-        platform = 'osx';
-      }
-      else {
-        platform = 'linux';
-      }
-      return new RegExp('mongodb-runner_' + platform);
+      return new RegExp('mongodb-runner_' + req.platform);
     }
   },
   'mongoscope': {
     repo: '10gen/mongoscope',
     filename: function(req){
-      var platform = req.param('os', 'osx');
-      if(platform === 'darwin'){
-        platform = 'osx';
-      }
-      else {
-        platform = 'linux';
-      }
-
-      return new RegExp('mongoscope(-server)?_' + platform);
+      return new RegExp('mongoscope(-server)?_' + req.platform);
     }
   }
 };
@@ -116,10 +90,37 @@ function installScript(go){
   };
 }
 
+app.get('/', function(req, res){
+  res.set('Content-Type', 'text/plain');
+  res.send([
+    '                                _',
+    '                          .-\'` `}',
+    '                  _./)   /       }',
+    '                .\'o   \ |       }',
+    '                \'.___.\'`.\    {`',
+    '                /`\_/  , `.    }',
+    '                \=\' .-\'   _`\  {',
+    '                 `\'`;/      `,  }',
+    '                    _\       ;  }',
+    '                   /__`;-...\'--\'',
+    ].join('\n'));
+});
+
 app.get('/:app/install', installScript(false));
 app.get('/:app/go', installScript(true));
 
+
+app.get('/:app/releases', function(req, res, next){
+  req.locals.app.list(function(err, releases){
+    if(err) return next(err);
+    res.send(releases);
+  });
+});
+
 app.get('/:app/releases/:v', function(req, res){
+  if(!req.locals.release){
+    return res.status(404).send('No releases for this app.');
+  }
   if(!req.param('version')) return res.send(req.locals.release);
 
   var want = req.param('version'),
@@ -139,5 +140,5 @@ app.get('/:app/releases/:v/download', function(req, res){
     console.log('No asset named ', wanted, 'in the release');
     return res.status(404).send('No asset named ' + wanted + 'in the release: ' + JSON.stringify(req.locals.release, null, 2));
   }
-  res.redirect(asset.browser_download_url);
+  res.redirect(asset.browser_download_url + '?access_token=' + process.env.GITHUB_TOKEN);
 });

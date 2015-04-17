@@ -7,6 +7,10 @@ function App(name, repo){
   this._data = [];
 }
 
+App.prototype.list = function(fn){
+  return this.data(fn);
+};
+
 App.prototype.data = function(fn){
   gh.list(process.env.GITHUB_TOKEN, this.repo, function(err, data){
     if(err) return fn(err);
@@ -15,7 +19,7 @@ App.prototype.data = function(fn){
       return release;
     });
     this._data.sort(function(a, b){
-      return semver.compare(a.version, b.version);
+      return semver.rcompare(a.version, b.version);
     });
     fn(null, this._data);
   });
@@ -24,11 +28,14 @@ App.prototype.data = function(fn){
 App.prototype.version = function(version, fn){
   if(version === 'latest') return this.latest(fn);
 
-  var res = this._data.filter(function(r){
-    return r.version === version;
+  this.data(function(err){
+    if(err) return fn(err);
+    var res = this._data.filter(function(r){
+      return r.version === version;
+    });
+    if(res.length !== 1) return fn(null, null);
+    fn(null, res);
   });
-  if(res.length !== 1) return fn(new Error('wtf?'));
-  fn(null, res);
 };
 
 App.prototype.latest = function(fn){
