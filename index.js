@@ -48,6 +48,12 @@ var apps = {
     filename: function(req) {
       return new RegExp('mongodb-runner_' + req.platform);
     }
+  },
+  'mongodb-scout': {
+    repo: '10gen/scout',
+    filename: function(req) {
+      return new RegExp('mongodb-scout_' + req.platform);
+    }
   }
 };
 
@@ -62,7 +68,7 @@ app.param('app', function(req, res, next, name) {
   next();
 });
 
-app.param('v', function(req, res, next, v) {
+app.param('version', function(req, res, next, v) {
   req.locals.app.version(v, function(err, release) {
     if (err) return next(err);
 
@@ -88,6 +94,15 @@ function installScript(go) {
 }
 
 app.get('/', function(req, res) {
+  res.send(Object.keys(apps).map(function(_id) {
+    return {
+      _id: _id,
+      href: '/app/' + _id
+    };
+  }));
+});
+
+app.get('/squirrel', function(req, res) {
   res.set('Content-Type', 'text/plain');
   res.send([
     '                                _',
@@ -106,6 +121,12 @@ app.get('/', function(req, res) {
 app.get('/:app/install', installScript(false));
 app.get('/:app/go', installScript(true));
 
+/**
+ * @todo (imlucas): Figure out a good way to do app metadata.
+ */
+app.get('/:app', function(req, res) {
+  res.redirect('/' + req.param('app') + '/releases');
+});
 
 app.get('/:app/releases', function(req, res, next) {
   req.locals.app.list(function(err, releases) {
@@ -114,7 +135,7 @@ app.get('/:app/releases', function(req, res, next) {
   });
 });
 
-app.get('/:app/releases/:v', function(req, res) {
+app.get('/:app/releases/:version', function(req, res) {
   if (!req.locals.release) {
     return res.status(404).send('No releases for this app.');
   }
@@ -127,7 +148,7 @@ app.get('/:app/releases/:v', function(req, res) {
   return update ? res.send(200, latest) : res.send(204);
 });
 
-app.get('/:app/releases/:v/download', function(req, res) {
+app.get('/:app/releases/:version/download', function(req, res) {
   var wanted = req.locals.filename(req);
   var asset = req.locals.release.assets.filter(function(asset) {
     return wanted.test(asset.name);
