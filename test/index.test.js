@@ -1,20 +1,26 @@
-process.env.releases = __dirname + '/releases.json';
+var path = require('path');
 
-var request = require('supertest'),
-  app = require('../');
+process.env.releases = path.resolve(__dirname, './releases.json');
 
-describe('Squirrel', function(){
-  it('should send an update', function(done){
+var request = require('supertest');
+var app = require('../');
+
+describe('Squirrel', function() {
+  it('should send an update', function(done) {
     request(app)
       .get('/mongoscope-ci/releases/latest')
-      .query({version: '0.0.0'})
+      .query({
+        version: '0.0.0'
+      })
       .expect(200)
       .end(done);
   });
-  it('should not send an update if we already have the latest', function(done){
+  it('should not send an update if we already have the latest', function(done) {
     request(app)
       .get('/mongoscope-ci/releases/latest')
-      .query({version: '100.0.1'})
+      .query({
+        version: '100.0.1'
+      })
       .expect(204)
       .end(done);
   });
