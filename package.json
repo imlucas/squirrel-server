@@ -17,14 +17,14 @@
     "test": "mocha"
   },
   "dependencies": {
-    "express": "^4.4.4",
-    "github-release": "^0.1.0",
-    "jade": "^1.4.0",
-    "nconf": "^0.6.9",
-    "semver": "^2.3.1"
+    "express": "^4.13.3",
+    "github-release": "^0.2.0",
+    "jade": "^1.11.0",
+    "nconf": "^0.7.2",
+    "semver": "^5.0.1"
   },
   "devDependencies": {
-    "mocha": "^1.20.1",
-    "supertest": "^0.13.0"
+    "mocha": "^2.2.5",
+    "supertest": "^1.0.1"
   }
 }
