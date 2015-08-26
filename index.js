@@ -10,7 +10,7 @@ nconf.argv().env().use('memory').defaults({
 });
 
 app.use(function(req, res, next) {
-  var platform = req.param('os', 'osx');
+  var platform = req.params.os || 'osx';
   if (platform === 'darwin') {
     platform = 'osx';
   }
@@ -61,6 +61,9 @@ app.set('views', path.resolve(__dirname, './views'));
 app.set('view engine', require('jade').__express);
 
 app.param('app', function(req, res, next, name) {
+  if (!apps[name]) {
+    return res.status(404);
+  }
   req.locals = {
     app: App.get(name, apps[name].repo),
     filename: apps[name].filename
@@ -68,7 +71,7 @@ app.param('app', function(req, res, next, name) {
   next();
 });
 
-app.param('version', function(req, res, next, v) {
+app.param('v', function(req, res, next, v) {
   req.locals.app.version(v, function(err, release) {
     if (err) return next(err);
 
@@ -97,7 +100,7 @@ app.get('/', function(req, res) {
   res.send(Object.keys(apps).map(function(_id) {
     return {
       _id: _id,
-      href: '/app/' + _id
+      href: 'http://' + req.headers.host + '/' + _id
     };
   }));
 });
@@ -135,20 +138,20 @@ app.get('/:app/releases', function(req, res, next) {
   });
 });
 
-app.get('/:app/releases/:version', function(req, res) {
+app.get('/:app/releases/:v', function(req, res) {
   if (!req.locals.release) {
     return res.status(404).send('No releases for this app.');
   }
-  if (!req.param('version')) return res.send(req.locals.release);
+  if (!req.query.version) return res.send(req.locals.release);
 
-  var want = req.param('version');
+  var want = req.query.version;
   var latest = req.locals.release;
   var update = want === '0.0.0' || semver.lt(want, latest.version);
 
-  return update ? res.send(200, latest) : res.send(204);
+  return update ? res.status(200).send(latest) : res.status(204).send('');
 });
 
-app.get('/:app/releases/:version/download', function(req, res) {
+app.get('/:app/releases/:v/download', function(req, res) {
   var wanted = req.locals.filename(req);
   var asset = req.locals.release.assets.filter(function(asset) {
     return wanted.test(asset.name);
