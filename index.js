@@ -6,7 +6,7 @@ var path = require('path');
 var App = require('./models');
 
 nconf.argv().env().use('memory').defaults({
-  port: 8080
+  PORT: 8080
 });
 
 app.use(function(req, res, next) {
@@ -19,6 +19,12 @@ app.use(function(req, res, next) {
 });
 
 var apps = {
+  'mongodb-schema': {
+    repo: 'mongodb-js/mongodb-schema',
+    filename: function(req) {
+      return new RegExp('mongodb-schema-.*-' + req.platform);
+    }
+  },
   'mongoscope-ci': {
     repo: 'imlucas/mongoscope-ci',
     filename: function(req) {
