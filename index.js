@@ -159,12 +159,11 @@ app.get('/:app/releases/:v', function(req, res) {
 
 app.get('/:app/releases/:v/download', function(req, res) {
   var wanted = req.locals.filename(req);
-  var asset = req.locals.release.assets.filter(function(asset) {
-    return wanted.test(asset.name);
+  var asset = req.locals.release.assets.filter(function(a) {
+    return wanted.test(a.name);
   })[0];
 
   if (!asset) {
-    console.log('No asset named ', wanted, 'in the release');
     return res.status(404)
       .send('No asset named '
         + wanted
