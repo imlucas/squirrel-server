@@ -19,46 +19,13 @@ app.use(function(req, res, next) {
 });
 
 var apps = {
-  'mongodb-schema': {
-    repo: 'mongodb-js/mongodb-schema',
+  'mongodb-compass': {
+    repo: '10gen/compass',
     filename: function(req) {
-      return new RegExp('mongodb-schema-.*-' + req.platform);
-    }
-  },
-  'mongoscope-ci': {
-    repo: 'imlucas/mongoscope-ci',
-    filename: function(req) {
-      return new RegExp('mongoscope-ci_' + req.platform);
-    }
-  },
-  'mongodb-bridge': {
-    repo: 'imlucas/mongodb-bridge',
-    filename: function(req) {
-      return new RegExp('mongodb-bridge_' + req.platform);
-    }
-  },
-  'mongodb-dyno': {
-    repo: 'imlucas/mongodb-dyno',
-    filename: function(req) {
-      return new RegExp('mongodb-dyno_' + req.platform);
-    }
-  },
-  'mongodb-dyno-runner': {
-    repo: 'imlucas/mongodb-dyno',
-    filename: function(req) {
-      return new RegExp('mongodb-dyno-runner_' + req.platform);
-    }
-  },
-  'mongodb-runner': {
-    repo: 'imlucas/mongodb-runner',
-    filename: function(req) {
-      return new RegExp('mongodb-runner_' + req.platform);
-    }
-  },
-  'mongodb-scout': {
-    repo: '10gen/scout',
-    filename: function(req) {
-      return new RegExp('mongodb-scout_' + req.platform);
+      if (req.platform === 'osx') {
+        return new RegExp('MongoDBCompass-.*-darwin-x64\.dmg');
+      }
+      return new RegExp('MongoDBCompassSetup-.*\.exe');
     }
   }
 };
