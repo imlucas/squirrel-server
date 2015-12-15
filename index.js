@@ -9,6 +9,8 @@ nconf.argv().env().use('memory').defaults({
   PORT: 8080
 });
 
+app.use(require('mongodb-favicon/express'));
+
 app.use(function(req, res, next) {
   var platform = req.params.os || 'osx';
   if (platform === 'darwin') {

@@ -17,11 +17,14 @@
     "test": "mocha",
     "check": "mongodb-js-precommit"
   },
-  "precommit": ["check"],
+  "precommit": [
+    "check"
+  ],
   "dependencies": {
     "express": "^4.13.3",
     "github-release": "^0.2.0",
     "jade": "^1.11.0",
+    "mongodb-favicon": "0.0.1",
     "nconf": "^0.8.2",
     "semver": "^5.1.0"
   },
