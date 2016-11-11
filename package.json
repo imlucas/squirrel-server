@@ -29,10 +29,10 @@
     "semver": "^5.1.0"
   },
   "devDependencies": {
-    "eslint-config-mongodb-js": "^1.0.6",
-    "mocha": "^2.3.4",
+    "eslint-config-mongodb-js": "^2.2.0",
+    "mocha": "^3.1.2",
     "mongodb-js-precommit": "^0.2.8",
     "pre-commit": "^1.1.2",
-    "supertest": "^1.1.0"
+    "supertest": "^2.0.1"
   }
 }
